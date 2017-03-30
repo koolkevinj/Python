@@ -30,6 +30,8 @@ def read_cancel_metrics(infile_name):
         ('main Exc:', sys.exc_info()[0], ', ', sys.exc_info()[1], ', ', sys.exc_info()[2])
 
 
+
+
 try:
     argcnt = len(sys.argv)
     if argcnt < 1:

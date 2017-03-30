@@ -2,42 +2,45 @@ import sys
 import os
 import subprocess
 
-def read_metrics(l, metrics_tup):
+def read_metrics(l):
     #Ex:
-    #  10:36:13.453805|1776277248|IN|[METRIC] Event type FEED mark in 4024 ns, from orig 16412 ns
+    #  10:36:13.453805|17       76277248|IN|[METRIC] Event type FEED mark in 4024 ns, from orig 16412 ns
 
-    evt = l[find("Event") : ]
-    metrics_tup[0] = evt[5]
-    metrics_tup[1] = evt[9]
+    evt = l[l.find("Event") : ].split()
+    return {int(evt[5]), int(evt[9])}
 
 #
 # get_cancel_metrics
 # read the meterics from the file
 #
-def read_cancel_metrics(infile_name, ret_list):
+def read_cancel_metrics(infile_name, mi_list, fo_list, cnt_list):
     try:
         in_metric = False
-        metrics = (0,0,0)
+        metrics=()
+        cnt=0
 
         with open(infile_name,'r') as infile:
             for l in infile:
-                if in_metric == True:
+                if in_metric:
                     if 'CANCEL:' in l:
-                        metrics[2] += 1;   #A cancel for the current metric
-                    elif metrics[2] > 0:
+                        cnt += 1;   #A cancel for the current metric
+                    elif cnt > 0:
                         in_metric = False     #No more cancels. Save the metric and cancel count
-                        ret_list.insert(metrics)
-                        metrics[2] = 0
+                        mi_list.append(metrics[0])
+                        fo_list.append(metrics[1])
+                        cnt_list.append(cnt)
+                        cnt=0;
                     else:
                         in_metric = False    #This was not a cancel metric
                 else:
                     if '[METRIC]' in l:
-                        read_metrics(l, metrics)
-                        print ("m1="+metrics[0]+" m2="+metrics[1])
-                        in_metric = True
+                        metrics = read_metrics(l)
+                        if(metrics[0]>0 and metrics[1]>0):
+                            in_metric = True
 
     except:
         ('main Exc:', sys.exc_info()[0], ', ', sys.exc_info()[1], ', ', sys.exc_info()[2])
+        print ("exc2=")
 
 
 try:
@@ -46,9 +49,14 @@ try:
         print ("Usage arg is AQ log file")
         sys.exit()
 
-    metric_list = []
-    read_cancel_metrics(sys.argv[1], metric_list)
+    tool_list=[]
+    orig_list=[]
+    cnt_list=[]
+    read_cancel_metrics(sys.argv[1], tool_list, orig_list, cnt_list)
+    #for m in metric_list:
+        #print m
 
 
 except:
     ('main Exc:', sys.exc_info()[0], ', ', sys.exc_info()[1], ', ', sys.exc_info()[2])
+    print ("exc=1")

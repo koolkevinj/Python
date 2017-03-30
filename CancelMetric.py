@@ -1,6 +1,7 @@
 import sys
 import os
 import subprocess
+import numpy
 
 def read_metrics(l):
     #Ex:
@@ -43,20 +44,20 @@ def read_cancel_metrics(infile_name, mi_list, fo_list, cnt_list):
         print ("exc2=")
 
 
-try:
-    argcnt = len(sys.argv)
-    if argcnt < 2:
-        print ("Usage arg is AQ log file")
-        sys.exit()
+#try:
+argcnt = len(sys.argv)
+if argcnt < 2:
+    print ("Usage arg is AQ log file")
+    sys.exit()
 
-    tool_list=[]
-    orig_list=[]
-    cnt_list=[]
-    read_cancel_metrics(sys.argv[1], tool_list, orig_list, cnt_list)
-    #for m in metric_list:
-        #print m
+tool_list=[]
+orig_list=[]
+cnt_list=[]
+read_cancel_metrics(sys.argv[1], tool_list, orig_list, cnt_list)
+print numpy.histogram(tool_list)
+#print numpy.average(tool_list), numpy.average(orig_list)
 
 
-except:
-    ('main Exc:', sys.exc_info()[0], ', ', sys.exc_info()[1], ', ', sys.exc_info()[2])
-    print ("exc=1")
+#except:
+#   ('main Exc:', sys.exc_info()[0], ', ', sys.exc_info()[1], ', ', sys.exc_info()[2])
+#  print ("exc=1")

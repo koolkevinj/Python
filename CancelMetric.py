@@ -7,7 +7,7 @@ def read_metrics(l):
     #  10:36:13.453805|17       76277248|IN|[METRIC] Event type FEED mark in 4024 ns, from orig 16412 ns
 
     evt = l[l.find("Event") : ].split()
-    return {int(evt[5]), int(evt[9])}
+    return (int(evt[5]), int(evt[9]))
 
 #
 # get_cancel_metrics

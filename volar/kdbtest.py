@@ -14,22 +14,23 @@ def getkdb_data():
 
     
 def get_csv_data():
-    d = pd.read_csv('C:\\Kevin\\src\\Python\\samplemd.csv')
+    d = pd.read_csv('volar/samplemd.csv')
     d['time'] = pd.to_datetime(d['time'], format='%Y.%m.%dD%H:%M:%S.%f')
     d = d.set_index('time')
     return d
+
+def my_asof(gd):
+    return gd.asof(pd.DatetimeIndex(['2020-04-30 12:00:019.100']))
 
 
 if __name__ == '__main__':
     # create connection object
     
     data = get_csv_data()
-    #print(data.head(10))
-    #print(data.dtypes)
-    
-    grouped = data.groupby('ISIN')
-    print (grouped.head(10))
-    #tensec_freq = data.asfreq('10S')
-    #print (tensec_freq.head(100))
-   
+    gb = data.groupby(['ISIN'])
+    time_ints = pd.date_range(start ='2020-04-30 12:00:00.000', 
+                            end ='2020-04-30 12:01:00.000',
+                            freq ='10S')
+    result = gb.apply(my_asof)
+    print(result)
 

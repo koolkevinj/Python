@@ -1,4 +1,5 @@
 import qpython
+import os
 import pandas as pd
 from qpython import qconnection
 
@@ -19,18 +20,25 @@ def get_csv_data():
     d = d.set_index('time')
     return d
 
-def my_asof(gd):
-    return gd.asof(pd.DatetimeIndex(['2020-04-30 12:00:019.100']))
-
+def do_grp_at_time_f(grp, tm):
+    r = grp.asof(tm)
+    r.to_csv(of, index=False, header=False)
 
 if __name__ == '__main__':
     # create connection object
-    
+    of = open('volar/outfile.csv','w')
     data = get_csv_data()
-    gb = data.groupby(['ISIN'])
-    time_ints = pd.date_range(start ='2020-04-30 12:00:00.000', 
+    groups = data.groupby(['ISIN'])
+    time_ints = pd.date_range(start ='2020-04-30 12:00:00.100', 
                             end ='2020-04-30 12:01:00.000',
-                            freq ='10S')
-    result = gb.apply(my_asof)
-    print(result)
+                            freq ='20S')
+    #at_time = lambda x,y : x.asof(pd.DatetimeIndex(['2020-04-30 12:00:019.100']))
+    hdrs=pd.DataFrame(columns=data.columns).to_csv(of)
+    do_grp_at_time = lambda grp,tm : grp.asof(pd.DatetimeIndex([tm])).to_csv(of, header=False)
+    do_a_grp = lambda t : groups.apply(lambda grp : do_grp_at_time(grp,tm=t))
+    time_ints.to_series().apply(do_a_grp)
+    #do_a_grp(pd.DatetimeIndex(['2020-04-30 12:00:30.000']))
+    #do_a_grp(time_ints.to_series())
+    #print(result)
+
 
